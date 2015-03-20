@@ -1,10 +1,11 @@
-from setuptools import setup, find_packages
+#from setuptools import setup, find_packages
+from setuptools import *
 
 description='An implementation of the Acquia HTTP HMAC Spec (https://github.com/acquia/http-hmac-spec) in Python.'
 
 setup(
     name='http-hmac-python',
-    version='0.1.0',
+    version='1.0.0',
     description=description,
     long_description=description,
     url='https://github.com/baliame/http-hmac-python',
