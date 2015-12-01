@@ -5,7 +5,7 @@ description='An implementation of the Acquia HTTP HMAC Spec (https://github.com/
 
 setup(
     name='http-hmac-python',
-    version='2.0.0',
+    version='2.0.1',
     description=description,
     long_description=description,
     url='https://github.com/baliame/http-hmac-python',
@@ -25,6 +25,9 @@ setup(
     ],
     keywords='hmac development library',
     packages=find_packages(exclude=['features']),
+    install_requires=[
+        "requests"
+    ],
     extras_require={
     	'test': ['behave']
     },
