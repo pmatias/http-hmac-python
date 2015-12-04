@@ -79,7 +79,7 @@ class Request:
         if isinstance(body, bytes):
             self.body = body
         elif isinstance(body, str):
-            self.body = body
+            self.body = body.encode('utf-8')
         else:
             raise ValueError("Request body must be a string or bytes object.")
         return self
