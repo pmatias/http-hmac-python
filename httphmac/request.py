@@ -1,5 +1,7 @@
 from urllib import parse
 import requests
+import json
+import time
 
 
 class URL:
@@ -51,6 +53,13 @@ class URL:
         return '/{0}'.format(self.path.strip('/'))
 
 
+def canonicalize_header(key):
+    bits = key.split('-')
+    for idx, b in enumerate(bits):
+        bits[idx] = b.capitalize()
+    return '-'.join(bits)
+
+
 class Request:
     def __init__(self):
         self.method = "GET"
@@ -64,15 +73,21 @@ class Request:
 
     def with_url(self, url):
         self.url = URL(url)
+        self.header["Host"] = url.host
         return self
 
     def with_header(self, key, value):
-        self.header[self.canonicalize_header(key)] = value
+        self.header[canonicalize_header(key)] = value
         return self
 
     def with_headers(self, headers):
         for key, value in headers.items():
             self.with_header(key, value)
+        return self
+
+    def with_time(self):
+        self.header["X-Authorization-Timestamp"] = str(time.time())
+        self.header["Date"] = str(time.time())
         return self
 
     def with_body(self, body):
@@ -84,11 +99,16 @@ class Request:
             raise ValueError("Request body must be a string or bytes object.")
         return self
 
-    def canonicalize_header(self, key):
-        bits = key.split('-')
-        for idx, b in enumerate(bits):
-            bits[idx] = b.capitalize()
-        return '-'.join(bits)
+    def with_json_body(self, body):
+        if isinstance(body, dict):
+            try:
+                self.with_body(json.dumps(body))
+            except ValueError:
+                raise ValueError("Request body must be a string, bytes object, or a dict structure corresponding to a valid JSON.")
+        else:
+            self.with_body(body)
+        self.header["Content-Type"] = "application/json"
+        return self
 
     def get_header(self, key):
         key = self.canonicalize_header(key)

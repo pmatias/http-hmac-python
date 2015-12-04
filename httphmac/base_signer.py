@@ -19,6 +19,13 @@ class BaseSigner:
     def matches(self, header):
         return False
 
+    def check(self, request, secret):
+        return False
+
+    def sign_direct(self, request, authheaders, secret):
+        return request
+
+
 class BaseResponseSigner:
     def __init__(self, digest):
         self.digest = digest

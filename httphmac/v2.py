@@ -1,10 +1,12 @@
 from .base_signer import BaseSigner, BaseResponseSigner
 
 import base64
+import collections
 import hashlib
 import hmac
 import re
 import time
+from urllib import parse as urlparse
 
 
 class V2Signer(BaseSigner):
@@ -86,6 +88,31 @@ class V2Signer(BaseSigner):
         if re.match(r'(?i)^\s*acquia-http-hmac.*?version=\"2\.0\".*?$', header) is not None:
             return True
         return False
+
+    def check(self, request, secret):
+        if request.get_header("Authorization") == "":
+            return False
+        ah = self.parse_auth_headers(request.get_header("Authorization"))
+        if "signature" not in ah:
+            return False
+        return ah["signature"] == self.sign(request, ah, secret)
+
+    def unroll_auth_headers(self, ah):
+        res = ""
+        ordered = collections.OrderedDict(sorted(ah.items()))
+        for k, v in ordered.iteritems():
+            if res != "":
+                res += ","
+            value = v
+            if k != "signature":
+                value = urlparse.quote(v, safe='')
+            res += "{0}=\"{1}\"".format(k, value)
+        return res
+
+    def sign_direct(self, request, authheaders, secret):
+        sig = self.sign(request, authheaders, secret)
+        authheaders["signature"] = sig
+        return request.with_header("Authorization", "acquia-http-hmac {0}".format(self.unroll_auth_headers(authheaders)))
 
 
 class V2ResponseSigner(BaseResponseSigner):

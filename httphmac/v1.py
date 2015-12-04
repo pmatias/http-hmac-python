@@ -5,6 +5,7 @@ import hashlib
 import hmac
 import re
 
+
 class V1Signer(BaseSigner):
     def __init__(self, digest):
         super(V1Signer, self).__init__(digest)
@@ -43,3 +44,23 @@ class V1Signer(BaseSigner):
         if re.match(r'(?i)^\s*Acquia\s*[^:]+\s*:\s*[0-9a-zA-Z\\+/=]+\s*$', header) is not None:
             return True
         return False
+
+    def parse_auth_headers(self, authorization):
+        m = re.match(r'^(?i)Acquia\s+(.*?):(.+)$', authorization)
+        if m is not None:
+            return {"id": m.group(1), "signature": m.group(2)}
+        return {}
+
+    def check(self, request, secret):
+        if request.get_header("Authorization") == "":
+            return False
+        ah = self.parse_auth_headers(request.get_header("Authorization"))
+        if "id" not in ah:
+            return False
+        if "signature" not in ah:
+            return False
+        return ah["signature"] == self.sign(request, ah, secret)
+
+    def sign_direct(self, request, authheaders, secret):
+        sig = self.sign(request, authheaders, secret)
+        return request.with_header("Authorization", "Acquia {0}:{1}".format(authheaders["id"], sig))
