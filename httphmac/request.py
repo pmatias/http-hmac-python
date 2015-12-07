@@ -73,7 +73,7 @@ class Request:
 
     def with_url(self, url):
         self.url = URL(url)
-        self.header["Host"] = url.host
+        self.header["Host"] = self.url.host
         return self
 
     def with_header(self, key, value):
@@ -111,7 +111,7 @@ class Request:
         return self
 
     def get_header(self, key):
-        key = self.canonicalize_header(key)
+        key = canonicalize_header(key)
         if key in self.header:
             return self.header[key]
         return ''
