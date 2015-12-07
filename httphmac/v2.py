@@ -84,7 +84,6 @@ class V2Signer(BaseSigner):
         return self.response_signer
 
     def matches(self, header):
-        print(header)
         if re.match(r'(?i)^\s*acquia-http-hmac.*?version=\"2\.0\".*?$', header) is not None:
             return True
         return False
@@ -103,9 +102,9 @@ class V2Signer(BaseSigner):
         for k, v in ordered.items():
             if res != "":
                 res += ","
-            value = v
+            value = str(v)
             if k != "signature":
-                value = urlparse.quote(v, safe='')
+                value = urlparse.quote(str(v), safe='')
             res += "{0}=\"{1}\"".format(k, value)
         return res
 
