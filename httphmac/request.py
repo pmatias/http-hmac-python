@@ -1,4 +1,6 @@
 from urllib import parse
+import base64
+import hashlib
 import requests
 import json
 import time
@@ -97,6 +99,10 @@ class Request:
             self.body = body.encode('utf-8')
         else:
             raise ValueError("Request body must be a string or bytes object.")
+        hasher = hashlib.sha256()
+        hasher.update(body)
+        digest = base64.b64encode(hasher.digest()).decode('utf-8')
+        self.header["X-Authorization-Content-SHA256"] = digest
         return self
 
     def with_json_body(self, body):
