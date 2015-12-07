@@ -102,7 +102,7 @@ class Request:
         hasher = hashlib.sha256()
         hasher.update(body)
         digest = base64.b64encode(hasher.digest()).decode('utf-8')
-        self.header["X-Authorization-Content-SHA256"] = digest
+        self.with_header("X-Authorization-Content-Sha256", digest)
         return self
 
     def with_json_body(self, body):
