@@ -100,7 +100,7 @@ class V2Signer(BaseSigner):
     def unroll_auth_headers(self, ah):
         res = ""
         ordered = collections.OrderedDict(sorted(ah.items()))
-        for k, v in ordered.iteritems():
+        for k, v in ordered.items():
             if res != "":
                 res += ","
             value = v
