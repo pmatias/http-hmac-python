@@ -55,7 +55,7 @@ class V2Signer(BaseSigner):
         if timestamp == 0:
             raise ValueError("X-Authorization-Timestamp must be a valid, non-zero timestamp.")
         if self.preset_time is None:
-            curr_time = time.gmtime()
+            curr_time = time.time()
         else:
             curr_time = self.preset_time
         if timestamp > curr_time + 900:
