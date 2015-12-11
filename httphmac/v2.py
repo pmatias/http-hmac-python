@@ -21,17 +21,17 @@ class V2Signer(BaseSigner):
         query = request.url.query
         timestamp = request.get_header("x-authorization-timestamp")
         auth_headers = 'id={0}&nonce={1}&realm={2}&version=2.0'.format(authheaders['id'], authheaders['nonce'], authheaders['realm'])
-        base = '{0}\n{1}\n{2}\n{3}\n{4}'.format(method, host, path, query, auth_headers, timestamp)
+        base = '{0}\n{1}\n{2}\n{3}\n{4}'.format(method, host, path, query, auth_headers)
 
         cheaders = []
         cheaders_sign = '\n'
-        if "headers" in authheaders:
+        if "headers" in authheaders and authheaders["headers"] != "":
             cheaders = authheaders["headers"].split(";")
         cheaders.sort()
         for cheader in cheaders:
             cheaders_sign += '{0}: {1}\n'.format(cheader.lower(), request.get_header(cheader))
         base += cheaders_sign
-        base += '{0}'.format(request.get_header('x-authorization-timestamp'))
+        base += '{0}'.format(timestamp)
 
         if bodyhash is not None:
             base += '\n{0}\n{1}'.format(request.get_header('content-type'), bodyhash)

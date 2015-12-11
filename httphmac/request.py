@@ -88,8 +88,8 @@ class Request:
         return self
 
     def with_time(self):
-        self.header["X-Authorization-Timestamp"] = str(time.time())
-        self.header["Date"] = str(time.time())
+        self.header["X-Authorization-Timestamp"] = str(int(time.time()))
+        self.header["Date"] = str(int(time.time()))
         return self
 
     def with_body(self, body):
