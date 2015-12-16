@@ -24,8 +24,11 @@ class V2Signer(BaseSigner):
         for q in query_list:
             split_query_list.append(q.split('=', maxsplit=1))
         query_list = []
-        for k, v in split_query_list:
-            query_list.append('='.join([urlparse.quote(k, safe=''), urlparse.quote(v, safe='')]))
+        for e in split_query_list:
+            if len(e) < 2:
+                query_list.append(urlparse.quote(e[0], safe=''))
+            else:
+                query_list.append('='.join([urlparse.quote(e[0], safe=''), urlparse.quote(e[1], safe='')]))
 
         query = '&'.join(query_list)
         timestamp = request.get_header("x-authorization-timestamp")
