@@ -5,7 +5,7 @@ description='An implementation of the Acquia HTTP HMAC Spec (https://github.com/
 
 setup(
     name='http-hmac-python',
-    version='2.2.0-post3',
+    version='2.2.0-post4',
     description=description,
     long_description=description,
     url='https://github.com/baliame/http-hmac-python',

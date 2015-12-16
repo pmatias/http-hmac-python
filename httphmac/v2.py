@@ -25,7 +25,9 @@ class V2Signer(BaseSigner):
             split_query_list.append(q.split('=', maxsplit=1))
         query_list = []
         for e in split_query_list:
-            if len(e) < 2:
+            if len(e) < 1:
+                continue
+            elif len(e) < 2:
                 query_list.append(urlparse.quote(e[0], safe=''))
             else:
                 query_list.append('='.join([urlparse.quote(e[0], safe=''), urlparse.quote(e[1], safe='')]))
