@@ -13,7 +13,7 @@ class URL:
         self.host = m_url.netloc
         self.path = m_url.path
         self.rawquery = m_url.query
-        self.query = parse.parse_qs(self.rawquery) if self.rawquery is not None else None
+        self.query = parse.parse_qs(self.rawquery) if self.rawquery is not None and self.rawquery != '' else None
         self.fragment = m_url.fragment
         self.form = {}
 
