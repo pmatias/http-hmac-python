@@ -12,7 +12,8 @@ class URL:
         self.scheme = m_url.scheme
         self.host = m_url.netloc
         self.path = m_url.path
-        self.query = m_url.query
+        self.rawquery = m_url.query
+        self.query = parse.parse_qs(self.rawquery) if self.rawquery is not None else None
         self.fragment = m_url.fragment
         self.form = {}
 
@@ -35,7 +36,7 @@ class URL:
             result += 'http://{0}/'.format(self.host)
         result += self.path.lstrip('/')
         if self.query is not None and self.query != '':
-            result += '?{0}'.format(self.query)
+            result += '?{0}'.format(self.encoded_query())
         if self.fragment is not None and self.fragment != '':
             result += '#{0}'.format(self.fragment)
         return result
@@ -53,6 +54,12 @@ class URL:
 
     def canonical_path(self):
         return '/{0}'.format(self.path.strip('/'))
+
+    def encoded_query(self):
+        if self.query is not None and self.query != '':
+            return parse.urlencode(self.query, doseq=True, quote_via=parse.quote)
+        else:
+            return ''
 
 
 def canonicalize_header(key):

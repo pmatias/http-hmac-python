@@ -18,21 +18,8 @@ class V2Signer(BaseSigner):
         method = request.method.upper()
         host = request.get_header("host")
         path = request.url.canonical_path()
+        query = request.url.encoded_query()
 
-        query_list = request.url.query.split('&')
-        split_query_list = []
-        for q in query_list:
-            split_query_list.append(q.split('=', maxsplit=1))
-        query_list = []
-        for e in split_query_list:
-            if len(e) < 1:
-                continue
-            elif len(e) < 2:
-                query_list.append(urlparse.quote(e[0], safe=''))
-            else:
-                query_list.append('='.join([urlparse.quote(e[0], safe=''), urlparse.quote(e[1], safe='')]))
-
-        query = '&'.join(query_list)
         timestamp = request.get_header("x-authorization-timestamp")
         auth_headers = 'id={0}&nonce={1}&realm={2}&version=2.0'.format(authheaders['id'], authheaders['nonce'], authheaders['realm'])
         base = '{0}\n{1}\n{2}\n{3}\n{4}'.format(method, host, path, query, auth_headers)
