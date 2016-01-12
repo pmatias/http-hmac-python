@@ -47,7 +47,7 @@ class URL:
     def request_uri(self):
         result = '/{0}'.format(self.path.lstrip('/'))
         if self.query is not None and self.query != '':
-            result += '?{0}'.format(self.query)
+            result += '?{0}'.format(self.encoded_query())
         if self.fragment is not None and self.fragment != '':
             result += '#{0}'.format(self.fragment)
         return result
