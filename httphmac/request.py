@@ -1,5 +1,6 @@
 from urllib import parse
 import base64
+import collections
 import hashlib
 import requests
 import json
@@ -13,7 +14,7 @@ class URL:
         self.host = m_url.netloc
         self.path = m_url.path
         self.rawquery = m_url.query
-        self.query = parse.parse_qs(self.rawquery) if self.rawquery is not None and self.rawquery != '' else None
+        self.query = collections.OrderedDict(sorted(parse.parse_qs(self.rawquery).items())) if self.rawquery is not None and self.rawquery != '' else None
         self.fragment = m_url.fragment
         self.form = {}
 
