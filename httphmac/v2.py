@@ -183,7 +183,7 @@ class V2Signer(BaseSigner):
                 sha256 = hashlib.sha256()
                 sha256.update(request.body)
                 request.with_header("X-Authorization-Content-SHA256", base64.b64encode(sha256.digest()).decode('utf-8'))
-        sig = self.sign(request, ah, response.text, secret)
+        sig = self.sign(request, authheaders, secret)
         authheaders["signature"] = sig
         return request.with_header("Authorization", "acquia-http-hmac {0}".format(self.unroll_auth_headers(authheaders)))
 
@@ -220,7 +220,7 @@ class V2ResponseSigner(BaseResponseSigner):
         act = response.headers['X-Server-Authorization-HMAC-SHA256']
         if act == '':
             raise KeyError('Response is missing the signature header X-Server-Authorization-HMAC-SHA256.')
-        sig = self.sign(request, auth, )
+        sig = self.sign(request, ah, response.text, secret)
         return sig == act
 
     def signable(self, request, authheaders, response_body):
