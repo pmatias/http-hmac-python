@@ -193,8 +193,6 @@ class Request:
                 self.with_body(body)
             except:
                 raise ValueError("Request body must be a string, bytes object, or a dict structure corresponding to a valid JSON.")
-
-        else:
         self.header["Content-Type"] = "application/json"
         return self
 
