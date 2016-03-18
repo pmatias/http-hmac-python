@@ -6,8 +6,14 @@ import hashlib
 import hmac
 import re
 import time
-from urllib import parse as urlparse
+# from urllib import parse as urlparse
 
+try:
+    import urllib.parse as urlparse
+except:
+    import urlparse as urlparse
+
+import urllib
 
 class V2Signer(BaseSigner):
     """Implements a signer for the 2.0 version of the Acquia HTTP HMAC spec
@@ -91,7 +97,13 @@ class V2Signer(BaseSigner):
             sha256.update(request.body)
             bodyhash = base64.b64encode(sha256.digest()).decode('utf-8')
 
-        mac = hmac.HMAC(base64.b64decode(secret.encode('utf-8'), validate=True), digestmod=self.digest)
+        try:
+            mac = hmac.HMAC(base64.b64decode(secret.encode('utf-8'), validate=True), digestmod=self.digest)
+        except TypeError:
+            s = secret.encode('utf-8')
+            if not re.match(b'^[A-Za-z0-9+/]*={0,2}$', s):
+                raise binascii.Error('Non-base64 digit found')
+            mac = hmac.HMAC(base64.b64decode(s), digestmod=self.digest)
         mac.update(self.signable(request, authheaders, bodyhash).encode('utf-8'))
         digest = mac.digest()
         return base64.b64encode(digest).decode('utf-8')
@@ -163,7 +175,7 @@ class V2Signer(BaseSigner):
                 res += ","
             value = str(v)
             if k != "signature":
-                value = urlparse.quote(str(v), safe='')
+                value = urllib.quote(str(v), safe='')
             res += "{0}=\"{1}\"".format(k, value)
         return res
 

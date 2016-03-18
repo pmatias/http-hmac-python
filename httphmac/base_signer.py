@@ -3,7 +3,7 @@
 To use, create an instance of the included Signer class with the request details."""
 
 
-class BaseSigner:
+class BaseSigner(object):
     def __init__(self, digest):
         """Initializes a signer object.
 
