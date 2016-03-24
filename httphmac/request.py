@@ -1,4 +1,7 @@
-from urllib import parse
+try:
+    import urllib.parse as urlparse
+except:
+    import urlparse as urlparse
 import base64
 import collections
 import hashlib
@@ -17,7 +20,7 @@ class URL:
         Keyword arguments:
         url -- An absolute URL.
         """
-        m_url = parse.urlparse(url)
+        m_url = urlparse.urlparse(url)
         self.scheme = m_url.scheme
         self.host = m_url.netloc
         if not self.validate():
