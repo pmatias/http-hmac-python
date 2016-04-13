@@ -67,7 +67,7 @@ class BaseSigner(object):
         return request
 
 
-class BaseResponseSigner:
+class BaseResponseSigner(object):
     def __init__(self, digest):
         """Initializes a response signer object.
 

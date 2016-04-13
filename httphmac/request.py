@@ -1,7 +1,10 @@
 try:
     import urllib.parse as urlparse
+    from urllib.parse import urlencode, quote as urlquote
 except:
     import urlparse as urlparse
+    from urllib import urlencode, quote as urlquote
+import sys
 import base64
 import collections
 import hashlib
@@ -10,7 +13,7 @@ import json
 import time
 
 
-class URL:
+class URL(object):
     """A class that represents an absolute URL.
     """
 
@@ -27,7 +30,7 @@ class URL:
             raise ValueError("This class may only represent absolute URLs.")
         self.path = m_url.path
         self.rawquery = m_url.query
-        self.query = collections.OrderedDict(sorted(parse.parse_qs(self.rawquery).items())) if self.rawquery is not None and self.rawquery != '' else None
+        self.query = collections.OrderedDict(sorted(urlparse.parse_qs(self.rawquery).items())) if self.rawquery is not None and self.rawquery != '' else None
         self.fragment = m_url.fragment
         self.form = {}
 
@@ -85,7 +88,10 @@ class URL:
         The return value takes the form of key=value&key=value, and it never contains a leading question mark.
         """
         if self.query is not None and self.query != '' and self.query != {}:
-            return parse.urlencode(self.query, doseq=True, quote_via=parse.quote)
+            try:
+                return urlencode(self.query, doseq=True, quote_via=urlquote)
+            except TypeError:
+                return '&'.join(["{0}={1}".format(urlquote(k), urlquote(self.query[k][0])) for k in self.query])
         else:
             return ''
 
@@ -103,7 +109,7 @@ def canonicalize_header(key):
     return '-'.join(bits)
 
 
-class Request:
+class Request(object):
     def __init__(self):
         """Initializes a request object.
         """

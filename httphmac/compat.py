@@ -19,7 +19,7 @@ def get_signer_by_version(digest, ver):
         return None
 
 
-class SignatureIdentifier:
+class SignatureIdentifier(object):
     """An object that represents a compatibility layer across signature versions.
     It is capable of identifying the version range of signatures that is provided to it.
     """

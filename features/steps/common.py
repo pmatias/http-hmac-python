@@ -2,7 +2,10 @@ from httphmac.compat import SignatureIdentifier
 from httphmac.request import Request
 from httphmac.v1 import V1Signer
 from httphmac.v2 import V2Signer
-from urllib import parse
+try:
+    import urllib.parse as urlparse
+except:
+    import urlparse as urlparse
 import hashlib
 import base64
 
@@ -56,7 +59,7 @@ def step_impl(context):
 
 @given('the headers "{headers}" in query format')
 def step_impl(context, headers):
-    res = parse.parse_qs(headers, strict_parsing=1)
+    res = urlparse.parse_qs(headers, strict_parsing=1)
     for key, value in res.items():
         context.request.with_header(key, ', '.join(value))
 

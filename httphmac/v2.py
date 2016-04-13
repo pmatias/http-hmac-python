@@ -265,7 +265,13 @@ class V2ResponseSigner(BaseResponseSigner):
         if request.get_header('x-authorization-timestamp') == '':
             raise KeyError("X-Authorization-Timestamp is required.")
 
-        mac = hmac.HMAC(base64.b64decode(secret.encode('utf-8'), validate=True), digestmod=self.digest)
+        try:
+            mac = hmac.HMAC(base64.b64decode(secret.encode('utf-8'), validate=True), digestmod=self.digest)
+        except TypeError:
+            s = secret.encode('utf-8')
+            if not re.match(b'^[A-Za-z0-9+/]*={0,2}$', s):
+                raise binascii.Error('Non-base64 digit found')
+            mac = hmac.HMAC(base64.b64decode(s), digestmod=self.digest)
         mac.update(self.signable(request, authheaders, response_body).encode('utf-8'))
         digest = mac.digest()
         return base64.b64encode(digest).decode('utf-8')
