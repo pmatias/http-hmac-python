@@ -10,10 +10,10 @@ import time
 
 try:
     import urllib.parse as urlparse
+    from urllib.parse import quote as urlquote
 except:
     import urlparse as urlparse
-
-import urllib
+    from urllib import quote as urlquote
 
 class V2Signer(BaseSigner):
     """Implements a signer for the 2.0 version of the Acquia HTTP HMAC spec
@@ -175,7 +175,7 @@ class V2Signer(BaseSigner):
                 res += ","
             value = str(v)
             if k != "signature":
-                value = urllib.quote(str(v), safe='')
+                value = urlquote(str(v), safe='')
             res += "{0}=\"{1}\"".format(k, value)
         return res
 
