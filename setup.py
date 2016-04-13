@@ -5,7 +5,7 @@ description='An implementation of the Acquia HTTP HMAC Spec (https://github.com/
 
 setup(
     name='http-hmac-python',
-    version='2.2.8',
+    version='2.3.0',
     description=description,
     long_description=description,
     url='https://github.com/baliame/http-hmac-python',
@@ -17,6 +17,7 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries',
         'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
