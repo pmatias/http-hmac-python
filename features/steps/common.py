@@ -32,6 +32,14 @@ def get_digest(digest):
         raise ValueError("Unknown digester {0}".format(digest))
 
 
+def hbutil(request):
+    if request.body is None or request.body == b'':
+        return None
+    sha256 = hashlib.sha256()
+    sha256.update(request.body)
+    return base64.b64encode(sha256.digest()).decode('utf-8')
+
+
 @given('a new request')
 def step_impl(context):
     context.request = Request()
@@ -101,6 +109,8 @@ def step_impl(context, version, digest):
     classname = get_version(version)
     digester = get_digest(digest)
     context.signer = classname(digester)
+    if version == 'v2':
+        context.auth_headers['version'] = '2.0'
 
 
 @given('a compatibility layer spanning from version {v1} to {v2} with the "{digest}" digest')
@@ -134,6 +144,10 @@ def step_impl(context, header):
 
 @then('I should see the signature "{signature}"')
 def step_impl(context, signature):
+    if context.signature != signature:
+        print("Signable: ")
+        print(context.signer.signable(context.request, context.auth_headers, hbutil(context.request)))
+        print("Got signature: ", context.signature)
     assert context.signature == signature
 
 

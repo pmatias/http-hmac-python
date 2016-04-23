@@ -46,7 +46,7 @@ class V2Signer(BaseSigner):
         query = request.url.encoded_query()
 
         timestamp = request.get_header("x-authorization-timestamp")
-        auth_headers = 'id={0}&nonce={1}&realm={2}&version=2.0'.format(authheaders['id'], authheaders['nonce'], authheaders['realm'])
+        auth_headers = self.unroll_auth_headers(authheaders, exclude_signature=True, sep='&', quote=False)
         base = '{0}\n{1}\n{2}\n{3}\n{4}'.format(method, host, path, query, auth_headers)
 
         cheaders = []
@@ -162,7 +162,7 @@ class V2Signer(BaseSigner):
                 raise ValueError("X-Authorization-Content-SHA256 must match the SHA-256 hash of the request body.")
         return ah["signature"] == self.sign(request, ah, secret)
 
-    def unroll_auth_headers(self, authheaders):
+    def unroll_auth_headers(self, authheaders, exclude_signature=False, sep=",", quote=True):
         """Converts an authorization header dict-like object into a string representing the authorization.
 
         Keyword arguments:
@@ -170,14 +170,20 @@ class V2Signer(BaseSigner):
         """
         res = ""
         ordered = collections.OrderedDict(sorted(authheaders.items()))
-        for k, v in ordered.items():
-            if res != "":
-                res += ","
-            value = str(v)
-            if k != "signature":
-                value = urlquote(str(v), safe='')
-            res += "{0}=\"{1}\"".format(k, value)
-        return res
+        form = '{0}=\"{1}\"' if quote else '{0}={1}'
+        if exclude_signature:
+            return sep.join([form.format(k, urlquote(str(v), safe='')) for k, v in ordered.items() if k != 'signature'])
+        else:
+            return sep.join([form.format(k, urlquote(str(v), safe='') if k != 'signature' else str(v)) for k, v in ordered.items()])
+        # legacy bad code
+        # for k, v in ordered.items():
+        #     if res != "":
+        #        res += ","
+        #     value = str(v)
+        #     if k != "signature":
+        #         value = urlquote(str(v), safe='')
+        #     res += "{0}=\"{1}\"".format(k, value)
+        # return res
 
     def sign_direct(self, request, authheaders, secret):
         """Signs a request directly with a v2 signature. The request's Authorization header will change.
